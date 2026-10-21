@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NikosKomicks – Dein Comic-Universum</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #10101c;
+      color: white;
+    }
+    header {
+      padding: 24px;
+      background: #19192b;
+      text-align: center;
+      border-bottom: 3px solid #ff3158;
+    }
+    header h1 { margin: 0; font-size: 32px; }
+    header h1 span { color: #ff3158; }
+    nav { margin-top: 18px; }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    .hero {
+      padding: 65px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #25205a, #791b50);
+    }
+    .hero h2 { font-size: 38px; margin: 0 0 15px; }
+    .hero p { font-size: 18px; line-height: 1.6; }
+    .search {
+      display: block;
+      width: min(90%, 500px);
+      padding: 14px;
+      margin: 25px auto 0;
+      border-radius: 10px;
+      border: 0;
+      font-size: 16px;
+    }
+    main { max-width: 1100px; margin: auto; padding: 25px; }
+    .categories {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    .categories button, .comic button {
+      background: #ff3158;
+      border: 0;
+      padding: 11px 15px;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    h2.section { margin-top: 30px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 18px;
+    }
+    .comic {
+      background: #202035;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid #35354b;
+    }
+    .cover {
+      height: 145px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 55px;
+      background: linear-gradient(135deg, #422080, #ed3763);
+    }
+    .comic h3 { margin-bottom: 8px; }
+    .comic p { color: #c6c6d7; }
+    .comic button { width: 100%; margin-top: 8px; }
+    .notice {
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 12px;
+      background: #202035;
+      line-height: 1.6;
+    }
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #c6c6d7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💥 Nikos<span>Komicks</span> 📚</h1>
+    <nav>
+      <a href="#start">Start</a>
+      <a href="#comics">Comics</a>
+      <a href="#kategorien">Kategorien</a>
+      <a href="#community">Community</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="start">
+    <h2>Dein eigenes Comic-Universum!</h2>
+    <p>Entdecke neue Welten, mutige Helden und spannende Geschichten.<br>
+    Finde deinen nächsten Lieblingscomic!</p>
+    <input class="search" id="search" placeholder="🔎 Comics suchen..." oninput="filterComics()">
+  </section>
+
+  <main>
+    <h2 class="section" id="kategorien">Entdecke deine Kategorien</h2>
+    <div class="categories">
+      <button onclick="choose('Alle')">Alle</button>
+      <button onclick="choose('Superhelden')">🦸 Superhelden</button>
+      <button onclick="choose('Manga')">🎌 Manga</button>
+      <button onclick="choose('Fantasy')">🐉 Fantasy</button>
+      <button onclick="choose('Humor')">😂 Humor</button>
+      <button onclick="choose('Abenteuer')">🗺️ Abenteuer</button>
+      <button onclick="choose('Science-Fiction')">🚀 Science-Fiction</button>
+    </div>
+
+    <h2 class="section" id="comics">Beliebte Comics</h2>
+    <div class="grid" id="comicGrid"></div>
+
+    <section class="notice" id="community">
+      <h2>🌟 Deine Geschichte gehört hierher!</h2>
+      <p>Du möchtest deine eigenen Comics veröffentlichen oder Fehler melden?
+      Die Community-Funktionen sind für einen späteren Ausbau vorgesehen.</p>
+      <p>Für echte Benutzerkonten, sichere Downloads und Uploads benötigen wir
+      noch einen Server und eine Datenbank.</p>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 NikosKomicks · Dein eigenes Comic-Universum 💥
+  </footer>
+
+  <script>
+    const comics = [
+      ["Sternenwächter", "Superhelden", "🦸"],
+      ["Die letzte Galaxie", "Science-Fiction", "🚀"],
+      ["Drachenmond", "Fantasy", "🐉"],
+      ["Lachflash!", "Humor", "😂"],
+      ["Der verlorene Tempel", "Abenteuer", "🗺️"],
+      ["Schattenkrieger", "Manga", "⚔️"],
+      ["Titanen der Stadt", "Superhelden", "💥"],
+      ["Neon Samurai", "Manga", "🎌"],
+      ["Das magische Portal", "Fantasy", "✨"],
+      ["Mission Mars", "Science-Fiction", "🪐"],
+      ["Chaos im Klassenzimmer", "Humor", "🤣"],
+      ["Dschungelgeheimnis", "Abenteuer", "🌴"]
+    ];
+
+    let category = "Alle";
+
+    function choose(value) {
+      category = value;
+      filterComics();
+    }
+
+    function filterComics() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const filtered = comics.filter(c =>
+        (category === "Alle" || c[1] === category) &&
+        c[0].toLowerCase().includes(query)
+      );
+
+      document.getElementById("comicGrid").innerHTML =
+        filtered.map(c => `
+          <article class="comic">
+            <div class="cover">${c[2]}</div>
+            <h3>${c[0]}</h3>
+            <p>${c[1]}</p>
+            <button onclick="alert('Dies ist eine Comic-Demo. Echte Downloads folgen später.')">
+              Comic ansehen
+            </button>
+          </article>
+        `).join("") || "<p>Keine Comics gefunden.</p>";
+    }
+
+    filterComics();
+  </script>
+</body>
+</html>
